@@ -1,6 +1,6 @@
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { useMemo, useState, createContext } from 'react'
+import { useEffect, useMemo, useState, createContext } from 'react'
 import Login from './pages/auth/Login.jsx'
 import Signup from './pages/auth/Signup.jsx'
 import Welcome from './pages/auth/Welcome.jsx'
@@ -19,9 +19,15 @@ import ShellFigma from './components/ShellFigma.jsx'
 export const ColorModeContext = createContext({ toggle: () => {} })
 
 export default function App(){
-  const [mode, setMode] = useState(localStorage.getItem('eswift_theme') || 'light')
+  const [mode, setMode] = useState(localStorage.getItem('eswift_theme') || 'dark')
   const color = useMemo(() => ({ toggle: () => setMode(m => { const n=m==='light'?'dark':'light'; localStorage.setItem('eswift_theme', n); return n }) }), [])
   const theme = useMemo(() => createTheme({ palette:{ mode, primary:{ main:'#6C5CE7' }, secondary:{ main:'#00E5FF' }, background:{ default: mode==='light'?'#fafbff':'#0f1220', paper: mode==='light'?'#fff':'#0b0f1a' } }, shape:{ borderRadius:12 } }), [mode])
+
+  // Sync CSS token theme (figma-globals) using the .dark class on <html>
+  useEffect(()=>{
+    const root = document.documentElement
+    if (mode === 'dark') root.classList.add('dark'); else root.classList.remove('dark')
+  },[mode])
 
   return (
     <ColorModeContext.Provider value={color}>
