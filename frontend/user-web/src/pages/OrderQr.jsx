@@ -71,7 +71,7 @@ export default function OrderQr(){
 
   const fmt = (n) => `₹ ${Number(n||0).toFixed(2)}`
   const ring = (()=>{
-    const size = 240, stroke = 8
+    const size = 260, stroke = 8
     const r = (size - stroke)/2
     const circ = 2*Math.PI*r
     const pct = ttl0 ? Math.max(0, Math.min(1, expiresIn / ttl0)) : 0
@@ -120,22 +120,39 @@ export default function OrderQr(){
 
       {/* QR states */}
       {order.status==='paid' && qr ? (
-        <div style={{ background:'var(--bg-paper)', border:'1px solid var(--divider)', borderRadius:12, boxShadow:'var(--e-1)', textAlign:'center', padding:16 }}>
-          <div style={{ marginBottom:8 }}>Show this QR at the counter</div>
-          <div style={{ display:'flex', justifyContent:'center', position:'relative', width:240, height:240, margin:'0 auto' }}>
-            <svg width={ring.size} height={ring.size} style={{ position:'absolute', transform:'rotate(-90deg)' }}>
+        <div style={{ position:'relative', background:'var(--bg-paper)', border:'1px solid var(--divider)', borderRadius:12, boxShadow:'var(--e-1)', textAlign:'center', padding:16, overflow:'hidden' }}>
+          {/* animated backdrop blobs */}
+          <div className="backdrop-blobs">
+            <div className="blob primary" />
+            <div className="blob accent" />
+          </div>
+          <div style={{ marginBottom:8, position:'relative', zIndex:1 }}>Show this QR at the counter</div>
+          <div style={{ display:'flex', justifyContent:'center', position:'relative', width:ring.size, height:ring.size, margin:'6px auto 0' }}>
+            {/* Halo + progress ring behind the QR */}
+            <svg className="qr-ring-halo" width={ring.size} height={ring.size} style={{ position:'absolute', transform:'rotate(-90deg)', zIndex:0 }}>
+              <defs>
+                <linearGradient id="qrGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#6C5CE7" />
+                  <stop offset="100%" stopColor="#00E5FF" />
+                </linearGradient>
+              </defs>
               <circle cx={ring.size/2} cy={ring.size/2} r={ring.r} stroke="var(--surface)" strokeWidth={ring.stroke} fill="none" />
+              {/* moving liquid accent */}
               <circle cx={ring.size/2} cy={ring.size/2} r={ring.r}
-                stroke="var(--primary)" strokeWidth={ring.stroke} fill="none"
-                strokeLinecap="round" strokeDasharray={`${ring.dash} ${ring.circ}`} />
+                stroke="url(#qrGrad)" strokeWidth={ring.stroke} fill="none" strokeLinecap="round"
+                style={{ strokeDasharray: `${ring.circ*0.35} ${ring.circ}`, animation: 'dashMove 3.2s linear infinite' }} />
+              {/* actual countdown progress */}
+              <circle cx={ring.size/2} cy={ring.size/2} r={ring.r}
+                stroke="#7C4DFF" strokeWidth={ring.stroke} fill="none" strokeLinecap="round" strokeDasharray={`${ring.dash} ${ring.circ}`} />
             </svg>
-            <div style={{ margin:'auto' }}>
+            {/* QR on top */}
+            <div style={{ margin:'auto', zIndex:1, background:'#fff', padding:10, borderRadius:16 }}>
               <QRCode value={qr.token} size={200} />
             </div>
           </div>
-          <div style={{ marginTop:8 }} className="tabular-nums">Expires in {mm}:{ss}</div>
-          <button onClick={()=>{ const link=document.createElement('a'); link.href = `data:image/svg+xml,${encodeURIComponent(document.querySelector('svg + div svg')?.outerHTML || '')}`; link.download = `eswift-order-${id}.svg`; link.click() }}
-            style={{ marginTop:10, padding:'10px 12px', borderRadius:10, border:'1px solid var(--divider)', background:'transparent', fontWeight:600 }}>Download QR</button>
+          <div style={{ marginTop:12, fontWeight:700, fontSize:24, position:'relative', zIndex:1 }} className="tabular-nums">{mm}:{ss}</div>
+          <div style={{ color:'var(--text-secondary)', marginTop:2, position:'relative', zIndex:1 }}>Time Remaining</div>
+          <button className="qr-download-btn" style={{ marginTop:10, position:'relative', zIndex:1 }} onClick={()=>{ const el=document.querySelector('#qr-container svg'); const link=document.createElement('a'); link.href = `data:image/svg+xml,${encodeURIComponent(document.querySelector('svg + div svg')?.outerHTML || '')}`; link.download = `eswift-order-${id}.svg`; link.click() }}>Download QR</button>
         </div>
       ) : order.status==='delivered' ? (
         <div style={{ background:'var(--bg-paper)', border:'1px solid var(--divider)', borderRadius:12, boxShadow:'var(--e-1)', textAlign:'center', padding:16 }}>

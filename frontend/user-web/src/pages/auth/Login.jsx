@@ -41,15 +41,20 @@ export default function Login(){
   }
 
   return (
-    <Box sx={{ display:'flex', justifyContent:'center', alignItems:'center', minHeight:'70vh', px:2 }}>
-      <Card sx={{ width:'100%', maxWidth: 420 }}>
+    <Box sx={{ position:'relative', minHeight:'80vh', display:'flex', alignItems:'center', justifyContent:'center', px:2 }}>
+      <div className='backdrop-blobs'>
+        <div className='blob primary' />
+        <div className='blob accent' />
+      </div>
+      <Card sx={{ width:'100%', maxWidth: 520, overflow:'hidden', position:'relative', zIndex:1 }}>
+        <Box className='animated-gradient-bar' />
         <CardContent>
-          <Typography variant='h5' sx={{ mb:1, fontWeight:700 }}>Welcome to eSwift</Typography>
-          <Typography color='text.secondary' sx={{ mb:2 }}>Enter your mobile number to continue</Typography>
+          <Typography variant='h5' sx={{ mb:1, fontWeight:700 }}>Login</Typography>
+          <Typography color='text.secondary' sx={{ mb:2 }}>Enter your phone number to continue</Typography>
           <form onSubmit={onSubmit}>
             <TextField fullWidth label='Mobile Number' placeholder='9876543210' value={phone} onChange={e=>setPhone(e.target.value)}
               InputProps={{ startAdornment: <InputAdornment position='start'>{code}</InputAdornment> }} />
-            <Button type='submit' fullWidth variant='contained' sx={{ mt:2 }}>Send OTP</Button>
+            <Button type='submit' fullWidth variant='contained' sx={{ mt:2, background: 'linear-gradient(135deg,#6C5CE7 0%, #00E5FF 100%)', boxShadow: 2 }}>Send OTP</Button>
           </form>
         </CardContent>
       </Card>

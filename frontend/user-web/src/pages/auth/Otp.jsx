@@ -36,8 +36,13 @@ export default function Otp(){
   }
 
   return (
-    <Box sx={{ display:'flex', justifyContent:'center', alignItems:'center', minHeight:'75vh', px:2 }}>
-      <Card sx={{ width:'100%', maxWidth: 420 }} className={shake ? 'shake' : ''}>
+    <Box sx={{ position:'relative', minHeight:'80vh', display:'flex', alignItems:'center', justifyContent:'center', px:2 }}>
+      <div className='backdrop-blobs'>
+        <div className='blob primary' />
+        <div className='blob accent' />
+      </div>
+      <Card sx={{ width:'100%', maxWidth: 520, overflow:'hidden', position:'relative', zIndex:1 }} className={shake ? 'shake' : ''}>
+        <Box className='animated-gradient-bar' />
         <CardContent>
           <Typography variant='h6' sx={{ mb:1 }}>Verify OTP</Typography>
           <Typography color='text.secondary' sx={{ mb:2 }}>Sent to {phone}</Typography>
@@ -46,7 +51,7 @@ export default function Otp(){
           )}
           <form onSubmit={onVerify}>
             <TextField fullWidth label='Enter 6-digit code' value={code} onChange={e=>setCode(e.target.value)} />
-            <Button type='submit' fullWidth variant='contained' sx={{ mt:2 }}>Verify</Button>
+            <Button type='submit' fullWidth variant='contained' sx={{ mt:2, background: 'linear-gradient(135deg,#6C5CE7 0%, #00E5FF 100%)', boxShadow: 2 }}>Verify & Login</Button>
           </form>
           <Button onClick={onResend} sx={{ mt:1 }}>Resend OTP</Button>
         </CardContent>
