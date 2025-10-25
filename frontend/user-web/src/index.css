@@ -1,3 +1,5 @@
+@import url("./figma-globals.css");
+
 /* Global reset for responsive app layout */
 html, body, #root {
   height: 100%;
@@ -18,5 +20,4 @@ img { display:block; max-width:100%; height:auto; }
 /* micro interaction for +/- buttons */
 .pressable { transition: transform 0.08s ease; }
 .pressable:active { transform: scale(0.92); }
-/* Import Figma tokens/utilities (copied subset) */
-@import url("./figma-globals.css");
+/* end */
