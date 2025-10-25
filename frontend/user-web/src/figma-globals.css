@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+/* Extracted core tokens and utilities from figma/src/styles/globals.css */
+:root {
+  --font-size: 16px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro', sans-serif;
+
+  --primary: #8B5CF6; --primary-hover: #7C3AED; --primary-foreground: #ffffff;
+  --accent: #06B6D4; --accent-hover: #0891B2; --accent-foreground: #0F1220;
+  --success: #10B981; --warning: #F59E0B; --error: #EF4444; --info: #3B82F6;
+
+  --gradient-primary: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+  --gradient-accent: linear-gradient(135deg, #06B6D4 0%, #8B5CF6 100%);
+  --gradient-success: linear-gradient(135deg, #10B981 0%, #06B6D4 100%);
+
+  --bg-default: #F8F9FA; --bg-paper: #FFFFFF; --surface: #F3F4F6;
+  --text-primary: #1F2937; --text-secondary: #6B7280; --divider: #E5E7EB;
+
+  --s-4: 4px; --s-8: 8px; --s-12: 12px; --s-16: 16px; --s-20: 20px; --s-24: 24px; --s-32: 32px;
+  --r-8: 8px; --r-12: 12px; --r-16: 16px; --radius: 12px;
+  --e-1: 0 1px 2px rgba(0,0,0,.05); --e-2: 0 2px 8px rgba(0,0,0,.08); --e-3: 0 4px 16px rgba(0,0,0,.12);
+  --motion-fast: 150ms; --motion-medium: 220ms; --motion-slow: 300ms;
+}
+
+.dark {
+  --bg-default: #0F1220; --bg-paper: #0B0F1A; --surface: #14182A;
+  --text-primary: #E5E7EB; --text-secondary: #A6ADBB; --divider: #2A2F45;
+  --e-1: 0 1px 2px rgba(0,0,0,.3); --e-2: 0 2px 8px rgba(0,0,0,.4); --e-3: 0 4px 16px rgba(0,0,0,.5);
+}
+
+html { font-size: var(--font-size); }
+body { background: var(--bg-default); color: var(--text-primary); }
+.tabular-nums { font-variant-numeric: tabular-nums; }
+
+.shadow-e-1 { box-shadow: var(--e-1); }
+.shadow-e-2 { box-shadow: var(--e-2); }
+.shadow-e-3 { box-shadow: var(--e-3); }
+.bg-gradient-primary { background: var(--gradient-primary); }
+.bg-gradient-accent { background: var(--gradient-accent); }
+.bg-gradient-success { background: var(--gradient-success); }

@@ -14,7 +14,7 @@ import Orders from './pages/Orders.jsx'
 import Wallet from './pages/Wallet.jsx'
 import OrderDetails from './pages/OrderDetails.jsx'
 import Protected from './components/Protected.jsx'
-import Shell from './components/Shell.jsx'
+import ShellFigma from './components/ShellFigma.jsx'
 
 export const ColorModeContext = createContext({ toggle: () => {} })
 
@@ -33,7 +33,7 @@ export default function App(){
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/otp" element={<Otp />} />
-          <Route element={<Protected><Shell /></Protected>}>
+          <Route element={<Protected><ShellFigma /></Protected>}>
             <Route index element={<Navigate to="/restaurants" replace />} />
             <Route path="/restaurants" element={<Restaurants />} />
             <Route path="/restaurants/:id/menu" element={<Menu />} />
