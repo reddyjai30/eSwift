@@ -90,7 +90,7 @@ export default function Cart(){
   const items = cart.items || []
   const fmt = (n) => `₹ ${(Number(n||0)).toFixed(2)}`
   return (
-    <div>
+    <div style={{ paddingBottom: items.length>0 ? 88 : 0 }}>
       <h2 style={{ fontWeight:700, fontSize:20, marginBottom:12 }}>Your Cart</h2>
       {items.length===0 && <div style={{ color:'var(--text-secondary)' }}>Your cart is empty</div>}
       {items.map(it => (
@@ -143,6 +143,14 @@ export default function Cart(){
           <button onClick={pay} disabled={!items.length || (useWallet && walletBalance < (cart.total || 0))}
             style={{ width:'100%', marginTop:12, padding:'12px 14px', borderRadius:12, border:'none', color:'#fff', fontWeight:700, background: 'var(--gradient-primary)', opacity: (!items.length || (useWallet && walletBalance < (cart.total || 0))) ? 0.6 : 1, boxShadow:'var(--e-2)', cursor: (!items.length || (useWallet && walletBalance < (cart.total || 0))) ? 'not-allowed' : 'pointer' }}>
             {useWallet ? 'Pay from Wallet' : 'Proceed to Pay'}
+          </button>
+        </div>
+      )}
+      {items.length>0 && (
+        <div style={{ position:'fixed', left:0, right:0, bottom:64, zIndex:50, padding:'0 16px' }}>
+          <button onClick={pay} disabled={(useWallet && walletBalance < (cart.total || 0))}
+            style={{ width:'100%', padding:'14px 16px', borderRadius:14, border:'none', color:'#fff', fontWeight:800, background:'var(--gradient-primary)', boxShadow:'var(--e-3)', opacity: (useWallet && walletBalance < (cart.total || 0)) ? 0.6 : 1 }}>
+            {useWallet ? `Pay from Wallet  ${fmt(cart.total)}` : `Proceed to Payment  ${fmt(cart.total)}`}
           </button>
         </div>
       )}

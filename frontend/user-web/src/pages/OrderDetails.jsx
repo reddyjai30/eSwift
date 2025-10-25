@@ -41,8 +41,8 @@ export default function OrderDetails(){
       <div style={{ display:'flex', gap:8, marginTop:16 }}>
         {(order.status==='paid' || order.status==='expired') && (
           <button onClick={()=> navigate(`/orders/${order._id}/qr`)} style={{
-            padding:'10px 14px', borderRadius:10, border:'none', background:'var(--gradient-primary)', color:'#fff', fontWeight:600, boxShadow:'var(--e-2)'
-          }}>View QR / Refund</button>
+            padding:'12px 16px', borderRadius:10, border:'none', background:'var(--gradient-primary)', color:'#fff', fontWeight:700, boxShadow:'var(--e-2)'
+          }}>View QR Code</button>
         )}
         {order.status==='delivered' && (
           <button onClick={()=> window.open(`/api/orders/${order._id}/invoice.pdf`, '_blank')} style={{
