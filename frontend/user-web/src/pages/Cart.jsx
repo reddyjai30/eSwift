@@ -1,10 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { loadCart, patchCartItems, removeCartItem } from '../store/slices/cart.js'
-import { Box, Button, Card, CardContent, Checkbox, Divider, FormControlLabel, IconButton, Typography } from '@mui/material'
-import AddIcon from '@mui/icons-material/Add'
-import RemoveIcon from '@mui/icons-material/Remove'
-import DeleteIcon from '@mui/icons-material/Delete'
 import { useSnackbar } from 'notistack'
 import { api } from '../utils/api.js'
 
@@ -92,48 +88,64 @@ export default function Cart(){
 
   if (!cart) return null
   const items = cart.items || []
+  const fmt = (n) => `₹ ${(Number(n||0)).toFixed(2)}`
   return (
-    <Box>
-      <Typography variant='h5' sx={{ fontWeight:700, mb:2 }}>Your Cart</Typography>
-      {items.length===0 && <Typography color='text.secondary'>Your cart is empty</Typography>}
+    <div>
+      <h2 style={{ fontWeight:700, fontSize:20, marginBottom:12 }}>Your Cart</h2>
+      {items.length===0 && <div style={{ color:'var(--text-secondary)' }}>Your cart is empty</div>}
       {items.map(it => (
-        <Card key={it.itemId} sx={{ mb:1 }}>
-          <CardContent sx={{ display:'flex', alignItems:'center', gap:2 }}>
-            {it.imageUrl ? (<img src={it.imageUrl} alt='' style={{ width:56, height:56, objectFit:'cover', borderRadius:12 }} />) : (<Box sx={{ width:56, height:56, borderRadius:12, bgcolor:'action.focus' }} />)}
-            <Box sx={{ flex:1 }}>
-              <Typography variant='subtitle1'>{it.name}</Typography>
-              <Typography color='text.secondary'>₹ {it.price}</Typography>
-            </Box>
-            <Box sx={{ display:'flex', alignItems:'center', gap:1 }}>
-              <IconButton size='small' onClick={()=>dec(it)}><RemoveIcon/></IconButton>
-              <Typography sx={{ minWidth:20, textAlign:'center' }}>{it.quantity}</Typography>
-              <IconButton size='small' onClick={()=>inc(it)}><AddIcon/></IconButton>
-              <IconButton size='small' color='error' onClick={()=>remove(it)}><DeleteIcon/></IconButton>
-            </Box>
-          </CardContent>
-        </Card>
+        <div key={it.itemId} style={{ background:'var(--bg-paper)', border:'1px solid var(--divider)', borderRadius:12, padding:12, display:'flex', alignItems:'center', gap:12, marginBottom:10, boxShadow:'var(--e-1)' }}>
+          {it.imageUrl ? (
+            <img src={it.imageUrl} alt='' style={{ width:56, height:56, objectFit:'cover', borderRadius:12 }} />
+          ) : (
+            <div style={{ width:56, height:56, borderRadius:12, background:'var(--surface)' }} />
+          )}
+          <div style={{ flex:1 }}>
+            <div style={{ fontWeight:600 }}>{it.name}</div>
+            <div style={{ color:'var(--text-secondary)', fontSize:14 }}>{fmt(it.price)}</div>
+          </div>
+          <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+            <button onClick={()=>dec(it)} style={{ width:28, height:28, borderRadius:8, border:'1px solid var(--divider)', background:'transparent' }}>–</button>
+            <div style={{ minWidth:24, textAlign:'center' }}>{it.quantity}</div>
+            <button onClick={()=>inc(it)} style={{ width:28, height:28, borderRadius:8, border:'1px solid var(--divider)', background:'transparent' }}>+</button>
+            <button onClick={()=>remove(it)} style={{ width:28, height:28, borderRadius:8, border:'1px solid var(--divider)', background:'transparent', color:'var(--error)' }}>×</button>
+          </div>
+        </div>
       ))}
       {items.length>0 && (
-        <Card sx={{ mt:2 }}>
-          <CardContent>
-            <Typography>Subtotal: ₹ {cart.subtotal?.toFixed?.(2) ?? cart.subtotal}</Typography>
-            <Typography>GST ({cart.gstPercent}%): ₹ {cart.gstAmount?.toFixed?.(2) ?? cart.gstAmount}</Typography>
-            <Divider sx={{ my:1 }} />
-            <Typography variant='h6'>Total: ₹ {cart.total?.toFixed?.(2) ?? cart.total}</Typography>
-            <Box sx={{ mt:1 }}>
-              <FormControlLabel control={<Checkbox checked={useWallet} onChange={(e)=>setUseWallet(e.target.checked)} />} label={`Pay via Wallet (₹ ${walletBalance.toFixed(2)})`} />
-              {useWallet && (walletBalance < (cart.total || 0)) && (
-                <Typography variant='caption' sx={{ color:'error.main', display:'block', mt:-1 }}>
-                  Insufficient wallet balance — short by ₹ {(Math.max(0, (cart.total||0)-walletBalance)).toFixed(2)}
-                </Typography>
-              )}
-            </Box>
-            <Button fullWidth variant='contained' sx={{ mt:2 }} onClick={pay} disabled={!items.length || (useWallet && walletBalance < (cart.total || 0))}>
-              {useWallet ? 'Pay from Wallet' : 'Proceed to Pay'}
-            </Button>
-          </CardContent>
-        </Card>
+        <div style={{ background:'var(--bg-paper)', border:'1px solid var(--divider)', borderRadius:12, padding:16, marginTop:12, boxShadow:'var(--e-1)' }}>
+          <div style={{ display:'grid', gap:6 }}>
+            <div style={{ display:'flex', justifyContent:'space-between' }}>
+              <span>Subtotal</span>
+              <span className="tabular-nums">{fmt(cart.subtotal)}</span>
+            </div>
+            <div style={{ display:'flex', justifyContent:'space-between' }}>
+              <span>GST ({cart.gstPercent}%)</span>
+              <span className="tabular-nums">{fmt(cart.gstAmount)}</span>
+            </div>
+            <div style={{ borderTop:'1px solid var(--divider)', margin:'8px 0' }} />
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+              <span style={{ fontWeight:700 }}>Total</span>
+              <span className="tabular-nums" style={{ fontWeight:700 }}>{fmt(cart.total)}</span>
+            </div>
+          </div>
+          <div style={{ marginTop:10 }}>
+            <label style={{ display:'flex', alignItems:'center', gap:8, cursor:'pointer' }}>
+              <input type='checkbox' checked={useWallet} onChange={(e)=>setUseWallet(e.target.checked)} />
+              <span>Pay via Wallet ({fmt(walletBalance)})</span>
+            </label>
+            {useWallet && (walletBalance < (cart.total || 0)) && (
+              <div style={{ color:'var(--error)', fontSize:12, marginTop:4 }}>
+                Insufficient wallet balance — short by {fmt(Math.max(0, (cart.total||0)-walletBalance))}
+              </div>
+            )}
+          </div>
+          <button onClick={pay} disabled={!items.length || (useWallet && walletBalance < (cart.total || 0))}
+            style={{ width:'100%', marginTop:12, padding:'12px 14px', borderRadius:12, border:'none', color:'#fff', fontWeight:700, background: 'var(--gradient-primary)', opacity: (!items.length || (useWallet && walletBalance < (cart.total || 0))) ? 0.6 : 1, boxShadow:'var(--e-2)', cursor: (!items.length || (useWallet && walletBalance < (cart.total || 0))) ? 'not-allowed' : 'pointer' }}>
+            {useWallet ? 'Pay from Wallet' : 'Proceed to Pay'}
+          </button>
+        </div>
       )}
-    </Box>
+    </div>
   )
 }
