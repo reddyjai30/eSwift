@@ -1,4 +1,5 @@
 @import url("./figma-globals.css");
+@import url("./figma/full.css");
 
 /* Global reset for responsive app layout */
 html, body, #root {

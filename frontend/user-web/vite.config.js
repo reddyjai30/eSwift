@@ -7,6 +7,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: true,
+    fs: { allow: ['..', '../../', '../../figma'] },
     proxy: {
       '/api': {
         target: process.env.VITE_PROXY_API || 'http://localhost:5002',

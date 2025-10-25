@@ -17,12 +17,14 @@
     "@reduxjs/toolkit": "^2.9.2",
     "dayjs": "^1.11.18",
     "framer-motion": "^12.23.24",
+    "lucide-react": "^0.548.0",
     "notistack": "^3.0.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-qr-code": "^2.0.18",
     "react-redux": "^9.2.0",
-    "react-router-dom": "^7.9.4"
+    "react-router-dom": "^7.9.4",
+    "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
