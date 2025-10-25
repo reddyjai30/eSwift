@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { api } from '../utils/api.js'
 import { useDispatch, useSelector } from 'react-redux'
 import { addToCart, loadCart } from '../store/slices/cart.js'
@@ -7,6 +7,7 @@ import { useSnackbar } from 'notistack'
 
 export default function Menu(){
   const { id } = useParams()
+  const navigate = useNavigate()
   const [data, setData] = useState(null)
   const [qty, setQty] = useState({})
   const [activeCat, setActiveCat] = useState('')
@@ -14,6 +15,7 @@ export default function Menu(){
   const { enqueueSnackbar } = useSnackbar()
   const cart = useSelector(s=>s.cart.data)
   const catRefs = useRef({})
+  const sectionsReady = useRef(false)
 
   useEffect(()=>{ (async()=>{ try{ const r = await api.get(`/api/restaurants/${id}/menu?includeUnavailable=1`); setData(r.data) } catch(e){ enqueueSnackbar(e.message,{variant:'error'}) } })() },[id])
   useEffect(()=>{ if (!cart) dispatch(loadCart()) },[cart, dispatch])
@@ -58,7 +60,29 @@ export default function Menu(){
     return g
   },[data])
 
+  // Observe section positions to highlight active tab as user scrolls
+  useEffect(()=>{
+    if (!data) return
+    const keys = Object.keys(grouped)
+    if (!keys.length) return
+    const els = keys.map(k => catRefs.current[k]).filter(Boolean)
+    if (!els.length) return
+    sectionsReady.current = true
+    const obs = new IntersectionObserver((entries)=>{
+      // pick the top-most visible section
+      const vis = entries.filter(e=> e.isIntersecting).sort((a,b)=> a.boundingClientRect.top - b.boundingClientRect.top)
+      if (vis.length){
+        const idAttr = vis[0].target.getAttribute('data-cat')
+        if (idAttr) setActiveCat(idAttr)
+      }
+    }, { root: null, threshold: 0.1, rootMargin: '-80px 0px -60% 0px' })
+    els.forEach(el => obs.observe(el))
+    return () => obs.disconnect()
+  },[data, grouped])
+
   const fmt = (n) => `₹ ${Number(n||0).toFixed(2)}`
+  const count = (cart?.items||[]).reduce((s,i)=> s + (i.quantity||0), 0)
+  const total = fmt(cart?.total||0)
 
   return (
     <div>
@@ -92,7 +116,7 @@ export default function Menu(){
           </div>
 
           {Object.keys(grouped).map(cat => (
-            <div key={cat} ref={el => (catRefs.current[cat] = el)} style={{ marginBottom:16 }}>
+            <div key={cat} ref={el => (catRefs.current[cat] = el)} data-cat={cat} style={{ marginBottom:16 }}>
               <div style={{ fontWeight:700, margin:'8px 0' }}>{cat}</div>
               <div style={{ display:'grid', gap:10 }}>
                 {grouped[cat].map(it => (
@@ -126,6 +150,18 @@ export default function Menu(){
           ))}
         </>
       )}
+      {/* Sticky cart summary */}
+      <div style={{ position:'fixed', left:0, right:0, bottom:72, zIndex:35, pointerEvents:'none' }}>
+        {count>0 && (
+          <div style={{ maxWidth:1080, margin:'0 auto', padding:'0 16px' }}>
+            <div style={{ pointerEvents:'auto', display:'flex', alignItems:'center', justifyContent:'space-between', gap:10, background:'var(--bg-paper)', border:'1px solid var(--divider)', borderRadius:12, boxShadow:'var(--e-2)', padding:12 }}>
+              <div style={{ fontWeight:600 }}>{count} item{count>1?'s':''}</div>
+              <div style={{ fontWeight:700 }} className='tabular-nums'>{total}</div>
+              <button onClick={()=>navigate('/cart')} style={{ padding:'10px 12px', borderRadius:10, border:'none', background:'var(--gradient-primary)', color:'#fff', fontWeight:700, boxShadow:'var(--e-2)' }}>View Cart</button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

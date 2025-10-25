@@ -21,8 +21,8 @@ export default function Restaurants(){
     <div>
       <h2 style={{ fontWeight:700, fontSize:20, marginBottom:12 }}>Nearby Restaurants</h2>
       {/* Search bar */}
-      <div style={{ position:'sticky', top:0, zIndex:30, background:'var(--bg-default)' }}>
-        <div style={{ display:'flex', gap:8, marginBottom:12 }}>
+      <div style={{ position:'sticky', top:0, zIndex:30, background:'var(--bg-default)', paddingBottom:8, marginBottom:8, borderBottom:'1px solid var(--divider)' }}>
+        <div style={{ display:'flex', gap:8 }}>
           <input
             value={query}
             onChange={e=>setQuery(e.target.value)}
