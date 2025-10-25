@@ -1,0 +1,19 @@
+/* Global reset for responsive app layout */
+html, body, #root {
+  height: 100%;
+}
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #fafbff;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+}
+/* Improve image rendering across DPRs */
+img { display:block; max-width:100%; height:auto; }
+/* Safe-area for iOS notches when needed */
+.safe-pad { padding-bottom: env(safe-area-inset-bottom); }
+
+/* micro interaction for +/- buttons */
+.pressable { transition: transform 0.08s ease; }
+.pressable:active { transform: scale(0.92); }

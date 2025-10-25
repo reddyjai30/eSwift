@@ -1,0 +1,17 @@
+{
+  "name": "eswift-scanner-pwa",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --port 5180"
+  },
+  "dependencies": {
+    "jsqr": "^1.4.0"
+  },
+  "devDependencies": {
+    "vite": "^5.4.10"
+  }
+}

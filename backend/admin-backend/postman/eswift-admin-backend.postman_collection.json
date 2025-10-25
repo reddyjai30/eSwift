@@ -1,0 +1,171 @@
+{
+  "info": {
+    "name": "eSwift Admin Backend (Local)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5001" },
+    { "key": "token", "value": "" },
+    { "key": "restaurantId", "value": "" },
+    { "key": "itemId", "value": "" },
+    { "key": "contentType", "value": "image/jpeg" },
+    { "key": "filename", "value": "sample.jpg" },
+    { "key": "uploadUrl", "value": "" },
+    { "key": "imageKey", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{baseUrl}}/api/admin/auth/login" },
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"Admin@123\"\n}" }
+          },
+          "event": [
+            { "listen": "test", "script": { "exec": [
+              "const json = pm.response.json();",
+              "if (json && json.data && json.data.token) pm.collectionVariables.set('token', json.data.token);"
+            ], "type": "text/javascript" } }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Restaurants",
+      "item": [
+        {
+          "name": "Create Restaurant",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{baseUrl}}/api/admin/restaurants" },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Rameshwaram Cafe\",\n  \"address\": \"HSR Layout\"\n}" }
+          },
+          "event": [
+            { "listen": "test", "script": { "exec": [
+              "const json = pm.response.json();",
+              "if (json && json.data && json.data._id) pm.collectionVariables.set('restaurantId', json.data._id);"
+            ], "type": "text/javascript" } }
+          ]
+        },
+        {
+          "name": "Upload Restaurant Logo (multipart)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/admin/restaurants/{{restaurantId}}/logo?deleteOld=true" },
+            "body": { "mode": "formdata", "formdata": [ { "key": "file", "type": "file", "src": "" } ] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Uploads",
+      "item": [
+        {
+          "name": "Presign Menu Item Image",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{baseUrl}}/api/admin/menu/uploads/presign" },
+            "body": { "mode": "raw", "raw": "{\n  \"scope\": \"menuItemImage\",\n  \"restaurantId\": \"{{restaurantId}}\",\n  \"filename\": \"{{filename}}\",\n  \"contentType\": \"{{contentType}}\"\n}" }
+          },
+          "event": [
+            { "listen": "test", "script": { "exec": [
+              "const json = pm.response.json();",
+              "if (json && json.data) {",
+              "  if (json.data.key) pm.collectionVariables.set('imageKey', json.data.key);",
+              "  if (json.data.uploadUrl) pm.collectionVariables.set('uploadUrl', json.data.uploadUrl);",
+              "}",
+              ""
+            ], "type": "text/javascript" } }
+          ]
+        },
+        {
+          "name": "S3 PUT Upload (binary)",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Content-Type", "value": "{{contentType}}" }, { "key": "x-amz-acl", "value": "public-read" } ],
+            "url": { "raw": "{{uploadUrl}}" },
+            "body": { "mode": "file", "file": { "src": "" } }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Menu",
+      "item": [
+        {
+          "name": "Create Menu Item",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{baseUrl}}/api/admin/menu/{{restaurantId}}" },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Masala Dosa\",\n  \"price\": 120,\n  \"category\": \"South Indian\",\n  \"isAvailable\": true,\n  \"quantity\": 10\n}" }
+          },
+          "event": [
+            { "listen": "test", "script": { "exec": [
+              "const json = pm.response.json();",
+              "if (json && json.data && json.data._id) pm.collectionVariables.set('itemId', json.data._id);"
+            ], "type": "text/javascript" } }
+          ]
+        },
+        {
+          "name": "List Menu Items",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/admin/menu/{{restaurantId}}" }
+          }
+        },
+        {
+          "name": "Update Menu Item (JSON)",
+          "request": {
+            "method": "PATCH",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{baseUrl}}/api/admin/menu/item/{{itemId}}" },
+            "body": { "mode": "raw", "raw": "{\n  \"price\": 130,\n  \"quantity\": 5\n}" }
+          }
+        },
+        {
+          "name": "Add Menu Item Image (multipart)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/admin/menu/{{restaurantId}}/item/{{itemId}}/image" },
+            "body": { "mode": "formdata", "formdata": [ { "key": "file", "type": "file", "src": "" } ] }
+          }
+        },
+        {
+          "name": "Update Menu Item Image (multipart, deleteOld)",
+          "request": {
+            "method": "PATCH",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/admin/menu/{{restaurantId}}/item/{{itemId}}/image?deleteOld=true" },
+            "body": { "mode": "formdata", "formdata": [ { "key": "file", "type": "file", "src": "" } ] }
+          }
+        },
+        {
+          "name": "Delete Menu Item Image",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/admin/menu/{{restaurantId}}/item/{{itemId}}/image" }
+          }
+        },
+        {
+          "name": "Delete Menu Item",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/admin/menu/item/{{itemId}}" }
+          }
+        }
+      ]
+    }
+  ]
+}

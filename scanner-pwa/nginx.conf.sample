@@ -1,0 +1,36 @@
+# Example Nginx server for the eSwift Scanner PWA (Linux)
+# Copy to /etc/nginx/sites-available/eswift-scanner and symlink to sites-enabled, then reload nginx.
+
+server {
+    listen 80;
+    server_name _;  # or your-LAN-IP or domain
+
+    root /var/www/eswift-scanner;   # set to scanner-pwa/dist path
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Optional: proxy API through same origin
+    # location /api/ {
+    #     proxy_pass http://127.0.0.1:5002/api/;
+    #     proxy_http_version 1.1;
+    #     proxy_set_header Upgrade $http_upgrade;
+    #     proxy_set_header Connection "upgrade";
+    #     proxy_set_header Host $host;
+    # }
+
+    # Cache static assets lightly
+    location ~* \.(js|css|svg|png|jpg|jpeg|webp)$ {
+        expires 7d;
+        access_log off;
+    }
+}
+
+# macOS (Homebrew nginx) notes:
+# - Config: /opt/homebrew/etc/nginx/nginx.conf
+# - Default root: /opt/homebrew/var/www
+# Add a server block similar to above and set root to the dist folder
+# Restart: brew services restart nginx
+

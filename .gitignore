@@ -1,0 +1,25 @@
+# Node
+node_modules/
+**/node_modules/
+
+# Env and secrets
+.env
+**/.env
+*.local
+
+# Builds and caches
+/dist/
+/build/
+**/dist/
+**/build/
+.next/
+.cache/
+coverage/
+.tmp/
+tmp/
+
+# OS/editor
+.DS_Store
+*.log
+.vscode/
+.idea/
